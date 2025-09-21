@@ -6,7 +6,6 @@
 int main()
 {
 const char *exist_file= "f.txt";
-const char *new_file="f2.txt";
 int fd = open(exist_file, O_RDWR);
 if(fd == -1)
 {

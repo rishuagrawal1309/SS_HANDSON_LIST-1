@@ -1,31 +1,42 @@
-#include<unistd.h>
-#include<stdlib.h>
-#include<stdio.h>
-#include<string.h>
-#include<errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 
+#define SIZE 1024  
+int main() {
+    int fd1, fd2, n;
+    char buffer[SIZE];
 
-int main(int arg, char *v[])
-{
- if(arg!=3)
-{
-printf("./que7 src dest\n");
-return 0;
-}
+    fd1 = open("file1.txt", O_RDONLY);
+    if (fd1 < 0) {
+        perror("open file1");
+        exit(1);
+    }
 
-const char *src_file= v[1];
-const char *dest_file=v[2];
-char buff[1024];
-int res;
+    fd2 = open("file2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd2 < 0) {
+        perror("open file2");
+        close(fd1);
+        exit(1);
+    }
 
-snprintf(buff, sizeof(buff), "cp %s %s", src_file, dest_file);
-res = system(buff);
-if(res!=0)
-{
-printf("error %d\n", errno);
-printf("%s \n", strerror(errno));
-return 0;
-}
-printf("file copied\n");
-return 0;
+    while ((n = read(fd1, buffer, SIZE)) > 0) {
+        if (write(fd2, buffer, n) != n) {
+            perror("write error");
+            close(fd1);
+            close(fd2);
+            exit(1);
+        }
+    }
+
+    if (n < 0) {
+        perror("read error");
+    }
+
+    close(fd1);
+    close(fd2);
+
+    printf("file1.txt copied to file2.txt successfully!\n");
+    return 0;
 }
