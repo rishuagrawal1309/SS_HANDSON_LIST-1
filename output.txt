@@ -1,0 +1,2 @@
+Parent process writing.
+Child process writing.
